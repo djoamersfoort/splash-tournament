@@ -40,7 +40,7 @@ function mainLoop() {
 }
 
 // Constante waarden
-const SPELDUUR = 3;
+const SPELDUUR = 45;
 const CODE_W = 87;
 const CODE_A = 65;
 const CODE_D = 68;
@@ -55,7 +55,7 @@ const Y_VERSNELLING = 0.6;
 const Y_SPRONGKRACHT = 15;
 const X_VERSNELLING = 0.1;
 const X_VERTRAGING = 1.05;
-const KRIMP_START_FRAME = 300;
+const KRIMP_START_FRAME = 10800;
 
 // Variërende waarden
 var speler1 = {
