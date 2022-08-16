@@ -1,0 +1,8 @@
+html {
+	background-image: url("../images/background.png");
+}
+canvas {
+	position: absolute;
+	left: calc(50% - 650px);
+	top: calc(50% - 350px);
+}
