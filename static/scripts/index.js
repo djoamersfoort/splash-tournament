@@ -40,7 +40,7 @@ function mainLoop() {
 }
 
 // Constante waarden
-const SPELDUUR = 45;
+const SPELDUUR = 45; // in seconden
 const CODE_W = 87;
 const CODE_A = 65;
 const CODE_D = 68;
@@ -55,7 +55,7 @@ const Y_VERSNELLING = 0.6;
 const Y_SPRONGKRACHT = 15;
 const X_VERSNELLING = 0.1;
 const X_VERTRAGING = 1.05;
-const KRIMP_START_FRAME = 10800;
+const KRIMP_START_FRAME = 10800; // 180 seconden * 60 fps
 
 // Variërende waarden
 var speler1 = {
@@ -275,7 +275,6 @@ function bijwerken() {
 	else if (speler2.NaarRechts && !speler2.NaarLinks) speler2.xsnelheid += X_VERSNELLING;
 	else speler2.xsnelheid /= X_VERTRAGING;
 	
-
 	waterX += WATER_SNELHEID;
 	if (waterX > 1300) waterX = 0;
 
@@ -342,12 +341,24 @@ function tekenBasis(filter) {
 }
 
 function tekenen() {
-	c.textAlign = "right";
-	tekenBasis("none");
-	c.fillStyle = timerKleur;
-	c.font = '32px comic sans ms, chilanka, sans-serif';
-	c.fillText(timerValue + timer, canvas.width - 9, 35);
 	c.textAlign = "center";
+	tekenBasis("none");
+	if (frameTeller < (SPELDUUR + 1) * 60) {
+		c.font = "50px comic sans ms, chilanka, sans-serif";
+		c.fillStyle = (timer < 10) ? "red":"black";
+		c.fillText("0:" + ("0" + timer).slice(-2), canvas.width / 2, 70);
+		c.font = "24px comic sans ms, chilanka, sans-serif";
+		c.fillText("UNTIL AREA REDUCTION", canvas.width / 2, 100);
+	} else if (frameTeller < KRIMP_START_FRAME) {
+		var tijdOver = Math.floor(KRIMP_START_FRAME / 60 - frameTeller / 60);
+		var minuten = Math.floor(tijdOver / 60);
+		var seconden = tijdOver % 60;
+		c.font = "50px comic sans ms, chilanka, sans-serif";
+		c.fillStyle = (minuten == 0 && seconden < 10) ? "red":"black";
+		c.fillText(minuten + ":" + ("0" + seconden).slice(-2), canvas.width / 2, 70);
+		c.font = "24px comic sans ms, chilanka, sans-serif";
+		c.fillText("UNTIL TOTAL SHRINK", canvas.width / 2, 100);
+	}
 	if (frameTeller >= KRIMP_START_FRAME && frameTeller % 60 <= 30) {
 		c.fillStyle = "red";
 		c.font = "50px comic sans ms, chilanka, sans-serif";
