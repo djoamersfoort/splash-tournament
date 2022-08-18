@@ -17,4 +17,19 @@ The amount of participants must be a power of 2 to have a clear structure for th
 The prize for the champion will likely be a bag of M&M's.  
 This because the 'N&M' in N&M Games is often compared to M&M at DJO Amersfoort.
 
+## Starting
+Clone the repository and navigate into it's folder:
+```bash
+git clone https://github.com/djoamersfoort/splash-tournament
+cd splash-tournament
+```  
+
+Now launch the `index.html` file, nearly all browsers should be able to run it!
+```bash
+xdg-open index.html
+```
+
+## Contributing
+Contributions to this project are welcome!
+
 # Good luck and have fun!
