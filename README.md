@@ -28,6 +28,41 @@ Now launch the `index.html` file, nearly all browsers should be able to run it!
 ```bash
 xdg-open index.html
 ```
+## Game controls
+### Keyboard
+|Keybind|Action|
+|-------|------|
+|Enter|Start Game|
+|W|Yellow player: Jump|
+|A|Yellow player: Move Left|
+|D|Yellow player: Move Right|
+|Arrow Up|Green player: Jump|
+|Arrow Left|Green player: Move Left|
+|Arrow Right|Green player: Move Right|
+|Escape|Pause|
+
+### One DualShock 4 controller
+|Button|Action|
+|-------|------|
+|Square|Start Game|
+|Left Thumb Stick|Yellow player: Move|
+|Green Thumb Stick|Green player: Move|
+|L1|Yellow player: Jump|
+|R1|Green player: Jump|
+|Triangle|Restart game if ended|
+
+### Two DualShock 4 controllers
+For both players:
+|Button|Action|
+|-------|------|
+|Square|Start Game|
+|Triangle|Restart game if ended|
+
+Per player:
+|Button|Action|
+|-------|------|
+|Left Thumb Stick|Move|
+|Cross|Jump|
 
 ## Contributing
 Contributions to this project are welcome!

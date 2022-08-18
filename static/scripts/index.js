@@ -98,7 +98,7 @@ var PLATFORM_BOUNDS = {
 var laadVoortgang = 0;
 var spelGepauzeerd = false;
 var wachtOpStart = true;
-var toets13Ingedrukt = false;
+var tweeControllerModus = false;
 var tekenOverwinningsEffectStatus = 0;
 var randomWinnaar = Math.round(Math.random()) + 1;
 var frameTeller = 0;
@@ -150,9 +150,11 @@ function connecthandler(event) {
 }
 function addgamepad(gamepad) {
     controllers[gamepad.index] = gamepad;
+	if (Object.keys(controllers).length == 2) tweeControllerModus = true;
 }
 function disconnecthandler(event) {
     delete controllers[event.gamepad.index];
+	tweeControllerModus = false;
 }
 function bijwerkenController() {
     var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
@@ -166,47 +168,55 @@ function bijwerkenController() {
         }
     }
     for (j in controllers) {
-        var controller = controllers[j];
+		var controller = controllers[j];
         for (var i=0; i<controller.buttons.length; i++) {
             var val = controller.buttons[i];
             var pressed = val == 1.0;
             if (typeof(val) == "object") {
                 pressed = val.pressed;
             }
-            if (pressed) {
-				if (i == 0) {
+            if (val.pressed) {
+				if (i == 2) {
 					if (wachtOpStart) {
 						wachtOpStart = false;
 						opgestart();
 					}
 				}
-				if (i == 4) speler1.Springt = true;
-				if (i == 5) speler2.Springt = true;				
-				if (i == 13 && !toets13Ingedrukt) {
-					toets13Ingedrukt = true;
-					if (!wachtOpStart && !speler1.Wint && !speler2.Wint) {
-						if (spelGepauzeerd) {
-							spelGepauzeerd = false;
-							window.requestAnimationFrame(mainLoop);
-						} else {
-							spelGepauzeerd = true;
-						}
-					}
+				if (tweeControllerModus) {
+					if (j == 0 && i == 0) speler1.Springt = true;
+					if (j == 1 && i == 0) speler2.Springt = true;
+				} else {
+					if (i == 4) speler1.Springt = true;
+					if (i == 5) speler2.Springt = true;				
 				}
-				if (i == 16 && (speler1.Wint || speler2.Wint || spelGepauzeerd)) location.reload();
+				if (i == 3 && (speler1.Wint || speler2.Wint || spelGepauzeerd)) location.reload();
 	        } else {
-				if (i == 4) speler1.Springt = false;
-				if (i == 5) speler2.Springt = false;
-				if (i == 13) toets13Ingedrukt = false;
+				if (tweeControllerModus) {
+					if (j == 0 && i == 0) speler1.Springt = false;
+					if (j == 1 && i == 0) speler2.Springt = false;
+				} else {
+					if (i == 4) speler1.Springt = false;
+					if (i == 5) speler2.Springt = false;
+				}
 			}
         }
-        if (controller.axes[0] <= -.75) speler1.NaarLinks = true;
-		else if (controller.axes[0] >= .75) speler1.NaarRechts = true;
-		else speler1.NaarLinks = speler1.NaarRechts = false;
-		
-        if (controller.axes[2] <= -.75) speler2.NaarLinks = true;
-		else if (controller.axes[2] >= .75) speler2.NaarRechts = true;
-		else speler2.NaarLinks = speler2.NaarRechts = false;
+		if (tweeControllerModus) {
+			if (j == 0 && controller.axes[0] <= -.75) speler1.NaarLinks = true;
+			else if (j == 0 && controller.axes[0] >= .75) speler1.NaarRechts = true;
+			else if (j == 0) speler1.NaarLinks = speler1.NaarRechts = false;
+
+			if (j == 1 && controller.axes[0] <= -.75) speler2.NaarLinks = true;
+			else if (j == 1 && controller.axes[0] >= .75) speler2.NaarRechts = true;
+			else if (j == 1) speler2.NaarLinks = speler2.NaarRechts = false;
+		} else {
+			if (controller.axes[0] <= -.75) speler1.NaarLinks = true;
+			else if (controller.axes[0] >= .75) speler1.NaarRechts = true;
+			else speler1.NaarLinks = speler1.NaarRechts = false;
+			
+			if (controller.axes[2] <= -.75) speler2.NaarLinks = true;
+			else if (controller.axes[2] >= .75) speler2.NaarRechts = true;
+			else speler2.NaarLinks = speler2.NaarRechts = false;
+		}
     }
 	if (wachtOpStart || spelGepauzeerd || speler1.Wint || speler2.Wint) window.requestAnimationFrame(bijwerkenController);
 }
