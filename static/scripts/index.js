@@ -14,12 +14,17 @@ Platform.src = 'static/images/Platform.png';
 var Logo = new Image();
 Logo.src = 'static/images/Logo.png';
 
+var Besturing = [new Image(), new Image(), new Image()];
+Besturing[0].src = "static/images/controls_keyboard.png";
+Besturing[1].src = "static/images/controls_controller_1.png";
+Besturing[2].src = "static/images/controls_controller_2.png";
+
 window.addEventListener('keydown', toetsIngedrukt);
 window.addEventListener('keyup', toetsLosgelaten);
 
 function loaded() {
 	laadVoortgang += 1;
-	if (laadVoortgang == 5) opgestart();
+	if (laadVoortgang == 8) opgestart();
 }
 
 function opgestart() {
@@ -98,7 +103,7 @@ var PLATFORM_BOUNDS = {
 var laadVoortgang = 0;
 var spelGepauzeerd = false;
 var wachtOpStart = true;
-var tweeControllerModus = false;
+var besturingModus = 0; // 0 = toetsenbord, 1 = 1 controller, 2 = 2 controllers
 var tekenOverwinningsEffectStatus = 0;
 var randomWinnaar = Math.round(Math.random()) + 1;
 var frameTeller = 0;
@@ -110,7 +115,7 @@ var waterX = 0;
 
 speler1.Foto.src = "static/images/Karakter1.png";
 speler2.Foto.src = "static/images/Karakter2.png";
-Water.onload = Platform.onload = Logo.onload = speler1.Foto.onload = speler2.Foto.onload = loaded;
+Water.onload = Platform.onload = Logo.onload = speler1.Foto.onload = speler2.Foto.onload = Besturing[0].onload = Besturing[1].onload = Besturing[2].onload = loaded;
 
 // Gebruikershandelingen
 function toetsIngedrukt(event) {
@@ -149,12 +154,14 @@ function connecthandler(event) {
 	addgamepad(event.gamepad);
 }
 function addgamepad(gamepad) {
-    controllers[gamepad.index] = gamepad;
-	if (Object.keys(controllers).length == 2) tweeControllerModus = true;
+	controllers[gamepad.index] = gamepad;
+	besturingModus = Object.keys(controllers).length;
+	if (wachtOpStart) tekenBesturing();
 }
 function disconnecthandler(event) {
-    delete controllers[event.gamepad.index];
-	tweeControllerModus = false;
+	delete controllers[event.gamepad.index];
+	besturingModus = Object.keys(controllers).length;
+	if (wachtOpStart) tekenBesturing();
 }
 function bijwerkenController() {
     var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
@@ -171,10 +178,6 @@ function bijwerkenController() {
 		var controller = controllers[j];
         for (var i=0; i<controller.buttons.length; i++) {
             var val = controller.buttons[i];
-            var pressed = val == 1.0;
-            if (typeof(val) == "object") {
-                pressed = val.pressed;
-            }
             if (val.pressed) {
 				if (i == 2) {
 					if (wachtOpStart) {
@@ -182,7 +185,7 @@ function bijwerkenController() {
 						opgestart();
 					}
 				}
-				if (tweeControllerModus) {
+				if (besturingModus == 2) {
 					if (j == 0 && i == 0) speler1.Springt = true;
 					if (j == 1 && i == 0) speler2.Springt = true;
 				} else {
@@ -191,7 +194,7 @@ function bijwerkenController() {
 				}
 				if (i == 3 && (speler1.Wint || speler2.Wint || spelGepauzeerd)) location.reload();
 	        } else {
-				if (tweeControllerModus) {
+				if (besturingModus == 2) {
 					if (j == 0 && i == 0) speler1.Springt = false;
 					if (j == 1 && i == 0) speler2.Springt = false;
 				} else {
@@ -200,7 +203,7 @@ function bijwerkenController() {
 				}
 			}
         }
-		if (tweeControllerModus) {
+		if (besturingModus == 2) {
 			if (j == 0 && controller.axes[0] <= -.75) speler1.NaarLinks = true;
 			else if (j == 0 && controller.axes[0] >= .75) speler1.NaarRechts = true;
 			else if (j == 0) speler1.NaarLinks = speler1.NaarRechts = false;
@@ -353,13 +356,13 @@ function tekenBasis(filter) {
 function tekenen() {
 	c.textAlign = "center";
 	tekenBasis("none");
-	if (frameTeller < (SPELDUUR + 1) * 60) {
+	if (frameTeller < (SPELDUUR + 1) * 60 && !wachtOpStart) {
 		c.font = "50px comic sans ms, chilanka, sans-serif";
 		c.fillStyle = (timer < 10) ? "red":"black";
 		c.fillText("0:" + ("0" + timer).slice(-2), canvas.width / 2, 70);
 		c.font = "24px comic sans ms, chilanka, sans-serif";
 		c.fillText("UNTIL AREA REDUCTION", canvas.width / 2, 100);
-	} else if (frameTeller < KRIMP_START_FRAME) {
+	} else if (frameTeller < KRIMP_START_FRAME && !wachtOpStart) {
 		var tijdOver = Math.floor(KRIMP_START_FRAME / 60 - frameTeller / 60);
 		var minuten = Math.floor(tijdOver / 60);
 		var seconden = tijdOver % 60;
@@ -368,16 +371,11 @@ function tekenen() {
 		c.fillText(minuten + ":" + ("0" + seconden).slice(-2), canvas.width / 2, 70);
 		c.font = "24px comic sans ms, chilanka, sans-serif";
 		c.fillText("UNTIL TOTAL SHRINK", canvas.width / 2, 100);
-	}
+	} else if (wachtOpStart) tekenBesturing();
 	if (frameTeller >= KRIMP_START_FRAME && frameTeller % 60 <= 30) {
 		c.fillStyle = "red";
 		c.font = "50px comic sans ms, chilanka, sans-serif";
 		c.fillText('PLATFORM SHRINKING!', canvas.width / 2, 100);
-	}
-	c.fillStyle = "black";
-	if (wachtOpStart) {
-		c.font = '89px comic sans ms, chilanka, sans-serif';
-		c.fillText('PRESS ENTER', canvas.width / 2, 200);
 	}
 	if (speler1.Wint) {
 		tekenBasis("blur(8px)");
@@ -396,6 +394,12 @@ function tekenen() {
 		c.font = '89px comic sans ms, chilanka, sans-serif';
 		c.fillText("PAUSED", canvas.width / 2, 200);
 	}
+}
+
+function tekenBesturing() {
+	c.drawImage(Besturing[besturingModus], canvas.width / 2 - Besturing[besturingModus].width / 2, 20);
+	c.strokeStyle = "rgb(51,163,218)";
+	c.strokeRect(canvas.width / 2 - Besturing[besturingModus].width / 2, 20, Besturing[besturingModus].width, Besturing[besturingModus].height);
 }
 
 function tekenOverwinningsEffect(toestand) {
