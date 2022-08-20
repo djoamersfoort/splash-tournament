@@ -136,13 +136,21 @@ var timerKleur = "black";
 var timerValue = '0:';
 var waterX = 0;
 
+let warning = "";
+
 speler1.Foto.src = "static/images/Karakter1.png";
 speler2.Foto.src = "static/images/Karakter2.png";
 Water.onload = Platform.onload = Logo.onload = speler1.Foto.onload = speler2.Foto.onload = Besturing[0].onload = Besturing[1].onload = Besturing[2].onload = loaded;
 
 const fire = player => {
 	if (!player.hasRocketLauncher || player.firing) return;
-	if (player.xsnelheid > 2 || player.xsnelheid < -2) return;
+	if (player.xsnelheid > 2 || player.xsnelheid < -2) {
+		warning = "You can't fire while moving!";
+		setTimeout(() => {
+			warning = ""
+		}, 3000);
+		return;
+	}
 
 	player.firing = true;
 	setTimeout(() => {
@@ -512,6 +520,10 @@ function tekenen() {
 			c.drawImage(fireBallLeft, Math.round(fireball.x), Math.round(fireball.y), 80, 80);
 		}
 	}
+
+	c.fillStyle = "salmon";
+	c.textAlign = "center";
+	c.fillText(warning, canvas.width / 2, 150);
 }
 
 function tekenBesturing() {
