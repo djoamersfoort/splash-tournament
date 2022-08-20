@@ -280,10 +280,18 @@ if (haveEvents) {
     window.addEventListener("gamepaddisconnected", disconnecthandler);
 }
 // Bijwerken
+let reloaded = false;
 function bijwerken() {
 	frameTeller += 1;
 	verstrekenTijd = Math.floor(frameTeller / 60);
 	timer = SPELDUUR - verstrekenTijd;
+	if (timer % 25 === 0 && !reloaded) {
+		reloaded = true;
+		speler1.hasRocketLauncher = true;
+		speler2.hasRocketLauncher = true;
+	} else {
+		reloaded = false;
+	}
 	if (timer < 10) {
 		timerKleur = 'red';
 		timerValue = '0:0';
@@ -319,12 +327,18 @@ function bijwerken() {
 		speler1.y = PLATFORM_BOUNDS.TOP;
 		speler1.ysnelheid = 0;
 		speler1.Sprong = false;
+		speler2.onTop = true;
+	} else {
+		speler2.onTop = false;
 	}
 	if (speler2.y > PLATFORM_BOUNDS.TOP && speler2.y < PLATFORM_BOUNDS.TOP + BOTSING_HITBOX &&
 	speler2.x > PLATFORM_BOUNDS.left && speler2.x < PLATFORM_BOUNDS.right) {
 		speler2.y = PLATFORM_BOUNDS.TOP;
 		speler2.ysnelheid = 0;
 		speler2.Sprong = false;
+		speler1.onTop = true;
+	} else {
+		speler1.onTop = false;
 	}
 
 	if (speler1.Springt && !speler1.Sprong) {
@@ -336,12 +350,12 @@ function bijwerken() {
 		speler2.ysnelheid = -Y_SPRONGKRACHT;
 	}
 
-	if (speler1.NaarLinks && !speler1.NaarRechts) speler1.xsnelheid -= X_VERSNELLING;
-	else if (speler1.NaarRechts && !speler1.NaarLinks) speler1.xsnelheid += X_VERSNELLING;
+	if (speler1.NaarLinks && !speler1.NaarRechts) speler1.xsnelheid -= X_VERSNELLING / ( speler1.onTop ? 1.5 : 1 );
+	else if (speler1.NaarRechts && !speler1.NaarLinks) speler1.xsnelheid += X_VERSNELLING / ( speler1.onTop ? 1.5 : 1 );
 	else speler1.xsnelheid /= X_VERTRAGING;
 
-	if (speler2.NaarLinks && !speler2.NaarRechts) speler2.xsnelheid -= X_VERSNELLING;
-	else if (speler2.NaarRechts && !speler2.NaarLinks) speler2.xsnelheid += X_VERSNELLING;
+	if (speler2.NaarLinks && !speler2.NaarRechts) speler2.xsnelheid -= X_VERSNELLING / ( speler2.onTop ? 1.5 : 1 );
+	else if (speler2.NaarRechts && !speler2.NaarLinks) speler2.xsnelheid += X_VERSNELLING / ( speler2.onTop ? 1.5 : 1 );
 	else speler2.xsnelheid /= X_VERTRAGING;
 	
 	waterX += WATER_SNELHEID;
