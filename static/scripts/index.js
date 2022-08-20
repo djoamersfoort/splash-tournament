@@ -280,10 +280,18 @@ if (haveEvents) {
     window.addEventListener("gamepaddisconnected", disconnecthandler);
 }
 // Bijwerken
+let reloaded = false;
 function bijwerken() {
 	frameTeller += 1;
 	verstrekenTijd = Math.floor(frameTeller / 60);
 	timer = SPELDUUR - verstrekenTijd;
+	if (timer % 25 === 0 && !reloaded) {
+		reloaded = true;
+		speler1.hasRocketLauncher = true;
+		speler2.hasRocketLauncher = true;
+	} else {
+		reloaded = false;
+	}
 	if (timer < 10) {
 		timerKleur = 'red';
 		timerValue = '0:0';
