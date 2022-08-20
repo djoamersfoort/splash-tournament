@@ -68,10 +68,14 @@ const rocketLauncher = new Image();
 const rocketLauncherLeft = new Image();
 const fireBall = new Image();
 const fireBallLeft = new Image();
+const firing = new Image();
+const firingLeft = new Image();
 rocketLauncher.src = "static/images/rocketlauncher.png";
 rocketLauncherLeft.src = "static/images/rocketlauncherleft.png";
 fireBall.src = "static/images/fireball.png";
 fireBallLeft.src = "static/images/fireballleft.png";
+firing.src = "static/images/firing.png";
+firingLeft.src = "static/images/firingLeft.png";
 
 const fireBalls = []
 
@@ -132,12 +136,21 @@ var timerKleur = "black";
 var timerValue = '0:';
 var waterX = 0;
 
+let warning = "";
+
 speler1.Foto.src = "static/images/Karakter1.png";
 speler2.Foto.src = "static/images/Karakter2.png";
 Water.onload = Platform.onload = Logo.onload = speler1.Foto.onload = speler2.Foto.onload = Besturing[0].onload = Besturing[1].onload = Besturing[2].onload = loaded;
 
 const fire = player => {
 	if (!player.hasRocketLauncher || player.firing) return;
+	if (player.xsnelheid > 2 || player.xsnelheid < -2) {
+		warning = "You can't fire while moving!";
+		setTimeout(() => {
+			warning = ""
+		}, 3000);
+		return;
+	}
 
 	player.firing = true;
 	setTimeout(() => {
@@ -312,16 +325,12 @@ function bijwerken() {
 		PLATFORM_BOUNDS.right_smaller = Number((PLATFORM_BOUNDS.right_smaller - .05).toFixed(2));
 	} else if (verlenging.krimp == 175) PLATFORM_BOUNDS.left_smaller = PLATFORM_BOUNDS.right_smaller = 0;
 
-	if (speler1.firing === false) {
-		speler1.x += speler1.xsnelheid;
-		speler1.y = speler1.y + speler1.ysnelheid;
-		speler1.ysnelheid = speler1.ysnelheid + Y_VERSNELLING;
-	}
-	if (speler2.firing === false) {
-		speler2.x += speler2.xsnelheid;
-		speler2.y = speler2.y + speler2.ysnelheid;
-		speler2.ysnelheid = speler2.ysnelheid + Y_VERSNELLING;
-	}
+	speler1.x += speler1.xsnelheid;
+	speler1.y = speler1.y + speler1.ysnelheid;
+	speler1.ysnelheid = speler1.ysnelheid + Y_VERSNELLING;
+	speler2.x += speler2.xsnelheid;
+	speler2.y =speler2.y + speler2.ysnelheid;
+	speler2.ysnelheid = speler2.ysnelheid + Y_VERSNELLING;
 	if (speler1.y > PLATFORM_BOUNDS.TOP && speler1.y < PLATFORM_BOUNDS.TOP + BOTSING_HITBOX &&
 	speler1.x > PLATFORM_BOUNDS.left && speler1.x < PLATFORM_BOUNDS.right) {
 		speler1.y = PLATFORM_BOUNDS.TOP;
@@ -341,21 +350,21 @@ function bijwerken() {
 		speler1.onTop = false;
 	}
 
-	if (speler1.Springt && !speler1.Sprong) {
+	if (speler1.Springt && !speler1.Sprong && !speler1.firing) {
 		speler1.Sprong = true;
 		speler1.ysnelheid = -Y_SPRONGKRACHT;
 	}
-	if (speler2.Springt && !speler2.Sprong) {
+	if (speler2.Springt && !speler2.Sprong && !speler2.firing) {
 		speler2.Sprong = true;
 		speler2.ysnelheid = -Y_SPRONGKRACHT;
 	}
 
-	if (speler1.NaarLinks && !speler1.NaarRechts) speler1.xsnelheid -= X_VERSNELLING / ( speler1.onTop ? 1.5 : 1 );
-	else if (speler1.NaarRechts && !speler1.NaarLinks) speler1.xsnelheid += X_VERSNELLING / ( speler1.onTop ? 1.5 : 1 );
+	if (speler1.NaarLinks && !speler1.NaarRechts && !speler1.firing) speler1.xsnelheid -= X_VERSNELLING / ( speler1.onTop ? 2 : 1 );
+	else if (speler1.NaarRechts && !speler1.NaarLinks && !speler1.firing) speler1.xsnelheid += X_VERSNELLING / ( speler1.onTop ? 2 : 1 );
 	else speler1.xsnelheid /= X_VERTRAGING;
 
-	if (speler2.NaarLinks && !speler2.NaarRechts) speler2.xsnelheid -= X_VERSNELLING / ( speler2.onTop ? 1.5 : 1 );
-	else if (speler2.NaarRechts && !speler2.NaarLinks) speler2.xsnelheid += X_VERSNELLING / ( speler2.onTop ? 1.5 : 1 );
+	if (speler2.NaarLinks && !speler2.NaarRechts && !speler2.firing) speler2.xsnelheid -= X_VERSNELLING / ( speler2.onTop ? 2 : 1 );
+	else if (speler2.NaarRechts && !speler2.NaarLinks && !speler2.firing) speler2.xsnelheid += X_VERSNELLING / ( speler2.onTop ? 1.5 : 1 );
 	else speler2.xsnelheid /= X_VERTRAGING;
 	
 	waterX += WATER_SNELHEID;
@@ -452,10 +461,13 @@ function tekenBasis(filter) {
 	for (const player of [speler1, speler2]) {
 		if (!player.hasRocketLauncher) continue;
 
-		if (player.facing === "right")
+		if (player.facing === "right") {
 			c.drawImage(rocketLauncher, player.x + relativeX, player.y + relativeY, size, size)
-		else
+			if (player.firing) c.drawImage(firing, player.x + 30 + size, player.y + 25, 50, 50)
+		} else {
 			c.drawImage(rocketLauncherLeft, player.x + relativeX - 100, player.y + relativeY, size, size)
+			if (player.firing) c.drawImage(firingLeft, player.x - size + 20, player.y + 25, 50, 50)
+		}
 	}
 }
 
@@ -508,6 +520,10 @@ function tekenen() {
 			c.drawImage(fireBallLeft, Math.round(fireball.x), Math.round(fireball.y), 80, 80);
 		}
 	}
+
+	c.fillStyle = "salmon";
+	c.textAlign = "center";
+	c.fillText(warning, canvas.width / 2, 150);
 }
 
 function tekenBesturing() {
