@@ -36,9 +36,11 @@ xdg-open index.html
 |W|Yellow player: Jump|
 |A|Yellow player: Move Left|
 |D|Yellow player: Move Right|
+|S|Yellow player: Fire|
 |Arrow Up|Green player: Jump|
 |Arrow Left|Green player: Move Left|
 |Arrow Right|Green player: Move Right|
+|Arrow Down|Green player: Fire|
 |Escape|Pause|
 
 ### One DualShock 4 controller
@@ -49,6 +51,8 @@ xdg-open index.html
 |Green Thumb Stick|Green player: Move|
 |L1|Yellow player: Jump|
 |R1|Green player: Jump|
+|L2|Yellow player: Fire|
+|R2|Green player: Fire|
 |Triangle|Restart game if ended|
 
 ### Two DualShock 4 controllers
@@ -63,6 +67,7 @@ Per player:
 |-------|------|
 |Left Thumb Stick|Move|
 |Cross|Jump|
+|R2|Fire|
 
 ## Contributing
 Contributions to this project are welcome!
