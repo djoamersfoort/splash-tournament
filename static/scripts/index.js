@@ -52,6 +52,8 @@ const CODE_D = 68;
 const CODE_PIJL_OP = 38;
 const CODE_PIJL_LI = 37;
 const CODE_PIJL_RE = 39;
+const FIRE_LI = "s";
+const FIRE_RE = "ArrowDown";
 const CODE_ESC = 27;
 const CODE_ENTER = 13;
 const BOTSING_HITBOX = 50;
@@ -61,6 +63,17 @@ const Y_SPRONGKRACHT = 15;
 const X_VERSNELLING = 0.1;
 const X_VERTRAGING = 1.05;
 const KRIMP_START_FRAME = 10800; // 180 seconden * 60 fps
+
+const rocketLauncher = new Image();
+const rocketLauncherLeft = new Image();
+const fireBall = new Image();
+const fireBallLeft = new Image();
+rocketLauncher.src = "static/images/rocketlauncher.png";
+rocketLauncherLeft.src = "static/images/rocketlauncherleft.png";
+fireBall.src = "static/images/fireball.png";
+fireBallLeft.src = "static/images/fireballleft.png";
+
+const fireBalls = []
 
 // Variërende waarden
 var speler1 = {
@@ -73,7 +86,10 @@ var speler1 = {
 	NaarRechts: false,
 	Springt: false,
 	Sprong: false,
-	Wint: false
+	Wint: false,
+	facing: "right",
+	hasRocketLauncher: true,
+	firing: false
 };
 var speler2 = {
 	Foto: new Image(),
@@ -85,7 +101,10 @@ var speler2 = {
 	NaarRechts: false,
 	Springt: false,
 	Sprong: false,
-	Wint: false
+	Wint: false,
+	facing: "left",
+	hasRocketLauncher: true,
+	firing: false
 };
 var verlenging = {
 	begonnen: false,
@@ -117,6 +136,33 @@ speler1.Foto.src = "static/images/Karakter1.png";
 speler2.Foto.src = "static/images/Karakter2.png";
 Water.onload = Platform.onload = Logo.onload = speler1.Foto.onload = speler2.Foto.onload = Besturing[0].onload = Besturing[1].onload = Besturing[2].onload = loaded;
 
+const fire = player => {
+	if (!player.hasRocketLauncher || player.firing) return;
+
+	player.firing = true;
+	setTimeout(() => {
+		player.firing = false;
+		if (player.facing === "right") {
+			player.xsnelheid = -8;
+			fireBalls.push({
+				facing: "right",
+				xSpeed: 20,
+				x: player.x,
+				y: player.y
+			})
+		} else {
+			player.xsnelheid = 8;
+			fireBalls.push({
+				facing: "left",
+				xSpeed: -20,
+				x: player.x,
+				y: player.y
+			})
+		}
+		player.hasRocketLauncher = false;
+	}, 2000)
+}
+
 // Gebruikershandelingen
 function toetsIngedrukt(event) {
 	if (event.keyCode == CODE_W) speler1.Springt = true;
@@ -125,6 +171,8 @@ function toetsIngedrukt(event) {
 	if (event.keyCode == CODE_PIJL_OP) speler2.Springt = true;
 	if (event.keyCode == CODE_PIJL_LI) speler2.NaarLinks = true;
 	if (event.keyCode == CODE_PIJL_RE) speler2.NaarRechts = true;
+	if (event.key === FIRE_LI) fire(speler1);
+	if (event.key === FIRE_RE) fire(speler2);
 	if (event.keyCode == CODE_ESC) {
 		if (!wachtOpStart) {
 			if (spelGepauzeerd) {
@@ -187,10 +235,14 @@ function bijwerkenController() {
 				}
 				if (besturingModus == 2) {
 					if (j == 0 && i == 0) speler1.Springt = true;
+					if (j == 0 && i == 7) fire(speler1);
 					if (j == 1 && i == 0) speler2.Springt = true;
+					if (j == 1 && i == 7) fire(speler2);
 				} else {
 					if (i == 4) speler1.Springt = true;
-					if (i == 5) speler2.Springt = true;				
+					if (i == 5) speler2.Springt = true;
+					if (i == 6) fire(speler1);
+					if (i == 7) fire(speler2);
 				}
 				if (i == 3 && (speler1.Wint || speler2.Wint || spelGepauzeerd)) location.reload();
 	        } else {
@@ -252,12 +304,16 @@ function bijwerken() {
 		PLATFORM_BOUNDS.right_smaller = Number((PLATFORM_BOUNDS.right_smaller - .05).toFixed(2));
 	} else if (verlenging.krimp == 175) PLATFORM_BOUNDS.left_smaller = PLATFORM_BOUNDS.right_smaller = 0;
 
-	speler1.x += speler1.xsnelheid;
-	speler1.y = speler1.y + speler1.ysnelheid;
-	speler2.x += speler2.xsnelheid;
-	speler2.y = speler2.y + speler2.ysnelheid;
-	speler1.ysnelheid = speler1.ysnelheid + Y_VERSNELLING;
-	speler2.ysnelheid = speler2.ysnelheid + Y_VERSNELLING;
+	if (speler1.firing === false) {
+		speler1.x += speler1.xsnelheid;
+		speler1.y = speler1.y + speler1.ysnelheid;
+		speler1.ysnelheid = speler1.ysnelheid + Y_VERSNELLING;
+	}
+	if (speler2.firing === false) {
+		speler2.x += speler2.xsnelheid;
+		speler2.y = speler2.y + speler2.ysnelheid;
+		speler2.ysnelheid = speler2.ysnelheid + Y_VERSNELLING;
+	}
 	if (speler1.y > PLATFORM_BOUNDS.TOP && speler1.y < PLATFORM_BOUNDS.TOP + BOTSING_HITBOX &&
 	speler1.x > PLATFORM_BOUNDS.left && speler1.x < PLATFORM_BOUNDS.right) {
 		speler1.y = PLATFORM_BOUNDS.TOP;
@@ -331,6 +387,30 @@ function bijwerken() {
 			}
 		}
 	}
+
+	for (const i in fireBalls) {
+		const fireball = fireBalls[i];
+		fireball.x += fireball.xSpeed;
+
+		if (fireball.facing === "right") fireball.xSpeed -= .3
+		else if (fireball.facing === "left") fireball.xSpeed += .3
+
+		if (fireball.facing === "right" && fireball.xSpeed <= 1) fireBalls.splice(i, 1);
+		else if (fireball.facing === "left" && fireball.xSpeed >= 1) fireBalls.splice(i, 1);
+
+		if (fireball.x + 40 > speler1.x && fireball.x + 40 < speler1.x + speler1.Foto.width && fireball.facing === "left") {
+			if (fireball.y + 40 > speler1.y && fireball.y + 40 < speler1.y + speler1.Foto.height) {
+				fireBalls.splice(i, 1)
+				speler1.xsnelheid = -15
+			}
+		}
+		else if (fireball.x + 40 > speler2.x && fireball.x + 40 < speler2.x + speler2.Foto.width && fireball.facing === "right") {
+			if (fireball.y + 40 > speler2.y && fireball.y + 40 < speler2.y + speler2.Foto.height) {
+				fireBalls.splice(i, 1)
+				speler2.xsnelheid = 15
+			}
+		}
+	}
 }
 // Tekenen
 function tekenBasis(filter) {
@@ -351,6 +431,18 @@ function tekenBasis(filter) {
 	c.drawImage(Water, waterX - 1300, 625);
 	c.drawImage(speler1.Foto, speler1.x, speler1.y);
 	c.drawImage(speler2.Foto, speler2.x, speler2.y);
+
+	const size = 100;
+	const relativeX = 50;
+	const relativeY = 0;
+	for (const player of [speler1, speler2]) {
+		if (!player.hasRocketLauncher) continue;
+
+		if (player.facing === "right")
+			c.drawImage(rocketLauncher, player.x + relativeX, player.y + relativeY, size, size)
+		else
+			c.drawImage(rocketLauncherLeft, player.x + relativeX - 100, player.y + relativeY, size, size)
+	}
 }
 
 function tekenen() {
@@ -393,6 +485,14 @@ function tekenen() {
 		c.fillStyle = "black";
 		c.font = '89px comic sans ms, chilanka, sans-serif';
 		c.fillText("PAUSED", canvas.width / 2, 200);
+	}
+
+	for (const fireball of fireBalls) {
+		if (fireball.facing === "right") {
+			c.drawImage(fireBall, Math.round(fireball.x), Math.round(fireball.y), 80, 80);
+		} else {
+			c.drawImage(fireBallLeft, Math.round(fireball.x), Math.round(fireball.y), 80, 80);
+		}
 	}
 }
 
