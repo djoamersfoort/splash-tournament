@@ -68,10 +68,14 @@ const rocketLauncher = new Image();
 const rocketLauncherLeft = new Image();
 const fireBall = new Image();
 const fireBallLeft = new Image();
+const firing = new Image();
+const firingLeft = new Image();
 rocketLauncher.src = "static/images/rocketlauncher.png";
 rocketLauncherLeft.src = "static/images/rocketlauncherleft.png";
 fireBall.src = "static/images/fireball.png";
 fireBallLeft.src = "static/images/fireballleft.png";
+firing.src = "static/images/firing.png";
+firingLeft.src = "static/images/firingLeft.png";
 
 const fireBalls = []
 
@@ -452,10 +456,13 @@ function tekenBasis(filter) {
 	for (const player of [speler1, speler2]) {
 		if (!player.hasRocketLauncher) continue;
 
-		if (player.facing === "right")
+		if (player.facing === "right") {
 			c.drawImage(rocketLauncher, player.x + relativeX, player.y + relativeY, size, size)
-		else
+			if (player.firing) c.drawImage(firing, player.x + 30 + size, player.y + 25, 50, 50)
+		} else {
 			c.drawImage(rocketLauncherLeft, player.x + relativeX - 100, player.y + relativeY, size, size)
+			if (player.firing) c.drawImage(firingLeft, player.x - size + 20, player.y + 25, 50, 50)
+		}
 	}
 }
 
