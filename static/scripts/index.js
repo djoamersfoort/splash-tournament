@@ -142,6 +142,7 @@ Water.onload = Platform.onload = Logo.onload = speler1.Foto.onload = speler2.Fot
 
 const fire = player => {
 	if (!player.hasRocketLauncher || player.firing) return;
+	if (player.xsnelheid > 2 || player.xsnelheid < -2) return;
 
 	player.firing = true;
 	setTimeout(() => {
@@ -316,14 +317,10 @@ function bijwerken() {
 		PLATFORM_BOUNDS.right_smaller = Number((PLATFORM_BOUNDS.right_smaller - .05).toFixed(2));
 	} else if (verlenging.krimp == 175) PLATFORM_BOUNDS.left_smaller = PLATFORM_BOUNDS.right_smaller = 0;
 
-	if (speler1.firing === false) {
-		speler1.x += speler1.xsnelheid;
-	}
+	speler1.x += speler1.xsnelheid;
 	speler1.y = speler1.y + speler1.ysnelheid;
 	speler1.ysnelheid = speler1.ysnelheid + Y_VERSNELLING;
-	if (speler2.firing === false) {
-		speler2.x += speler2.xsnelheid;
-	}
+	speler2.x += speler2.xsnelheid;
 	speler2.y =speler2.y + speler2.ysnelheid;
 	speler2.ysnelheid = speler2.ysnelheid + Y_VERSNELLING;
 	if (speler1.y > PLATFORM_BOUNDS.TOP && speler1.y < PLATFORM_BOUNDS.TOP + BOTSING_HITBOX &&
@@ -354,12 +351,12 @@ function bijwerken() {
 		speler2.ysnelheid = -Y_SPRONGKRACHT;
 	}
 
-	if (speler1.NaarLinks && !speler1.NaarRechts) speler1.xsnelheid -= X_VERSNELLING / ( speler1.onTop ? 2 : 1 );
-	else if (speler1.NaarRechts && !speler1.NaarLinks) speler1.xsnelheid += X_VERSNELLING / ( speler1.onTop ? 2 : 1 );
+	if (speler1.NaarLinks && !speler1.NaarRechts && !speler1.firing) speler1.xsnelheid -= X_VERSNELLING / ( speler1.onTop ? 2 : 1 );
+	else if (speler1.NaarRechts && !speler1.NaarLinks && !speler1.firing) speler1.xsnelheid += X_VERSNELLING / ( speler1.onTop ? 2 : 1 );
 	else speler1.xsnelheid /= X_VERTRAGING;
 
-	if (speler2.NaarLinks && !speler2.NaarRechts) speler2.xsnelheid -= X_VERSNELLING / ( speler2.onTop ? 2 : 1 );
-	else if (speler2.NaarRechts && !speler2.NaarLinks) speler2.xsnelheid += X_VERSNELLING / ( speler2.onTop ? 1.5 : 1 );
+	if (speler2.NaarLinks && !speler2.NaarRechts && !speler2.firing) speler2.xsnelheid -= X_VERSNELLING / ( speler2.onTop ? 2 : 1 );
+	else if (speler2.NaarRechts && !speler2.NaarLinks && !speler2.firing) speler2.xsnelheid += X_VERSNELLING / ( speler2.onTop ? 1.5 : 1 );
 	else speler2.xsnelheid /= X_VERTRAGING;
 	
 	waterX += WATER_SNELHEID;
