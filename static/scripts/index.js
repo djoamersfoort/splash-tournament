@@ -350,11 +350,11 @@ function bijwerken() {
 		speler2.ysnelheid = -Y_SPRONGKRACHT;
 	}
 
-	if (speler1.NaarLinks && !speler1.NaarRechts) speler1.xsnelheid -= X_VERSNELLING / ( speler1.onTop ? 1.5 : 1 );
-	else if (speler1.NaarRechts && !speler1.NaarLinks) speler1.xsnelheid += X_VERSNELLING / ( speler1.onTop ? 1.5 : 1 );
+	if (speler1.NaarLinks && !speler1.NaarRechts) speler1.xsnelheid -= X_VERSNELLING / ( speler1.onTop ? 2 : 1 );
+	else if (speler1.NaarRechts && !speler1.NaarLinks) speler1.xsnelheid += X_VERSNELLING / ( speler1.onTop ? 2 : 1 );
 	else speler1.xsnelheid /= X_VERTRAGING;
 
-	if (speler2.NaarLinks && !speler2.NaarRechts) speler2.xsnelheid -= X_VERSNELLING / ( speler2.onTop ? 1.5 : 1 );
+	if (speler2.NaarLinks && !speler2.NaarRechts) speler2.xsnelheid -= X_VERSNELLING / ( speler2.onTop ? 2 : 1 );
 	else if (speler2.NaarRechts && !speler2.NaarLinks) speler2.xsnelheid += X_VERSNELLING / ( speler2.onTop ? 1.5 : 1 );
 	else speler2.xsnelheid /= X_VERTRAGING;
 	
