@@ -314,14 +314,14 @@ function bijwerken() {
 
 	if (speler1.firing === false) {
 		speler1.x += speler1.xsnelheid;
-		speler1.y = speler1.y + speler1.ysnelheid;
-		speler1.ysnelheid = speler1.ysnelheid + Y_VERSNELLING;
 	}
+	speler1.y = speler1.y + speler1.ysnelheid;
+	speler1.ysnelheid = speler1.ysnelheid + Y_VERSNELLING;
 	if (speler2.firing === false) {
 		speler2.x += speler2.xsnelheid;
-		speler2.y = speler2.y + speler2.ysnelheid;
-		speler2.ysnelheid = speler2.ysnelheid + Y_VERSNELLING;
 	}
+	speler2.y =speler2.y + speler2.ysnelheid;
+	speler2.ysnelheid = speler2.ysnelheid + Y_VERSNELLING;
 	if (speler1.y > PLATFORM_BOUNDS.TOP && speler1.y < PLATFORM_BOUNDS.TOP + BOTSING_HITBOX &&
 	speler1.x > PLATFORM_BOUNDS.left && speler1.x < PLATFORM_BOUNDS.right) {
 		speler1.y = PLATFORM_BOUNDS.TOP;
@@ -341,11 +341,11 @@ function bijwerken() {
 		speler1.onTop = false;
 	}
 
-	if (speler1.Springt && !speler1.Sprong) {
+	if (speler1.Springt && !speler1.Sprong && !speler1.firing) {
 		speler1.Sprong = true;
 		speler1.ysnelheid = -Y_SPRONGKRACHT;
 	}
-	if (speler2.Springt && !speler2.Sprong) {
+	if (speler2.Springt && !speler2.Sprong && !speler2.firing) {
 		speler2.Sprong = true;
 		speler2.ysnelheid = -Y_SPRONGKRACHT;
 	}
