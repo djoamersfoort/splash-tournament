@@ -521,7 +521,7 @@ function tekenen() {
 		}
 	}
 
-	c.fillStyle = "salmon";
+	c.fillStyle = "red";
 	c.textAlign = "center";
 	c.fillText(warning, canvas.width / 2, 150);
 }
