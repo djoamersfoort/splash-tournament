@@ -56,10 +56,10 @@ const CODE_ESC = 27;
 const CODE_ENTER = 13;
 const BOTSING_HITBOX = 50;
 const WATER_SNELHEID = 0.7;
-const Y_VERSNELLING = 0.6;
-const Y_SPRONGKRACHT = 15;
-const X_VERSNELLING = 0.1;
-const X_VERTRAGING = 1.05;
+const Y_VERSNELLING = 1.2;
+const Y_SPRONGKRACHT = 20;
+const X_VERSNELLING = 0.42;
+const X_VERTRAGING = 1.02;
 const KRIMP_START_FRAME = 10800; // 180 seconden * 60 fps
 
 // Variërende waarden
